@@ -18,7 +18,9 @@ def fake_run(command, timeout=120):
     return 0, f"ran: {command}"
 
 
-def fake_plan(text, api_key, model, timeout=60):
+def fake_plan(text, settings):
+    if text == "fail":
+        raise RuntimeError("no backend")
     return {"command": "Get-Date", "answer": "here is the date"}
 
 
@@ -56,11 +58,12 @@ class JarvisTests(unittest.TestCase):
         self.app.deny(result["id"])
         self.assertEqual(self.app.approve(result["id"])["status"], "error")
 
-    def test_plain_language_needs_api_key(self):
-        self.assertEqual(self.app.handle_text("what time is it")["status"], "error")
+    def test_planner_failure_is_reported(self):
+        result = self.app.handle_text("fail")
+        self.assertEqual(result["status"], "error")
+        self.assertIn("planner failed", result["output"])
 
     def test_plain_language_uses_planner(self):
-        self.app.settings.api_key = "k"
         result = self.app.handle_text("what time is it")
         self.assertEqual(result["output"], "ran: Get-Date")
         self.assertEqual(result["answer"], "here is the date")

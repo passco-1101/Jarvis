@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parent.parent
 ENV_FILE = ROOT / ".env"
 LOG_DIR = ROOT / "logs"
 
-KEYS = ("JARVIS_PORT", "JARVIS_TOKEN", "JARVIS_MODEL", "ANTHROPIC_API_KEY")
+KEYS = ("JARVIS_PORT", "JARVIS_TOKEN", "JARVIS_MODEL", "JARVIS_CLAUDE_CLI", "ANTHROPIC_API_KEY")
 
 
 @dataclass
@@ -16,6 +16,7 @@ class Settings:
     token: str
     api_key: str
     model: str
+    claude_cli: str = "claude"
 
 
 def _read_env_file():
@@ -50,4 +51,5 @@ def load(create_token=False):
         token=token,
         api_key=values.get("ANTHROPIC_API_KEY", ""),
         model=values.get("JARVIS_MODEL", "claude-sonnet-5-5"),
+        claude_cli=values.get("JARVIS_CLAUDE_CLI", "claude"),
     )

@@ -15,7 +15,7 @@ MAX_BODY = 64_000
 
 
 class Jarvis:
-    def __init__(self, settings, run=executor.run_powershell, plan=planner.plan):
+    def __init__(self, settings, run=executor.run_powershell, plan=planner.plan_request):
         self.settings = settings
         self.run = run
         self.plan = plan
@@ -28,13 +28,11 @@ class Jarvis:
             return {"status": "error", "output": "empty request"}
         if text.startswith("!"):
             return self.submit(text[1:].strip())
-        if not self.settings.api_key:
-            return {"status": "error", "output": "No ANTHROPIC_API_KEY set. Send a raw command instead, e.g. !Get-Date"}
         try:
-            result = self.plan(text, self.settings.api_key, self.settings.model)
+            result = self.plan(text, self.settings)
         except Exception as exc:
             log.exception("planner failed")
-            return {"status": "error", "output": f"planner failed: {exc}"}
+            return {"status": "error", "output": f"planner failed: {exc}. Raw commands still work with a leading !"}
         if not result["command"]:
             return {"status": "done", "output": result["answer"]}
         response = self.submit(result["command"])

@@ -25,7 +25,12 @@ python -m jarvis approve <id>
 python -m jarvis deny <id>
 ```
 
-Plain English needs `ANTHROPIC_API_KEY` in `.env`. Without it, only `!` commands work.
+Plain English works in two ways:
+- **No API key (default):** Jarvis calls the Claude Code CLI (`claude -p`), which uses your existing
+  Claude login. Requires Claude Code installed and signed in on this PC.
+- **API key:** set `ANTHROPIC_API_KEY` in `.env` to use the Anthropic API instead.
+
+Raw `!` commands always work without either.
 
 ## Safety
 
